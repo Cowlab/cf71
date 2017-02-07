@@ -1,0 +1,196 @@
+/**
+ * @file  httpconnection.cpp
+ * @brief Handle one HTTP connection between server and client
+ *
+ * @author Saint-Genest Gwenael <gwen@hooligan0.net>
+ * @copyright Cowlab (c) 2017
+ *
+ * @par Warning
+ * CF21 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License
+ * version 3 as published by the Free Software Foundation. You
+ * should have received a copy of the GNU Lesser General Public
+ * License along with this program, see LICENSE file for more details.
+ * This program is distributed WITHOUT ANY WARRANTY see README file.
+ */
+#include "httpconnection.h"
+#include <QDebug>
+
+/**
+ * @brief Default constructor
+ * @param socket Pointer to a connected QTcpSocket
+ *
+ */
+httpConnection::httpConnection(QTcpSocket *socket)
+{
+    mSocket = socket;
+    mState  = REQ_LINE;
+    mMethod = UNKNOWN;
+    connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive()));
+}
+
+/**
+ * @brief Build a dummy response using a static "Hello World" content.
+ *
+ */
+void httpConnection::dummyResponse(void)
+{
+    QByteArray hd1("HTTP/1.1 200 OK\r\n");
+    mSocket->write(hd1);
+
+    hd1 = "Content-type: text/html\r\n";
+    mSocket->write(hd1);
+    hd1 = "\r\n";
+    mSocket->write(hd1);
+
+    hd1 = "<html><body><h1>Hello World !</h1></body></html>";
+    mSocket->write(hd1);
+
+    mSocket->close();
+}
+
+/**
+ * @brief Debug the received header (dump to console)
+ *
+ */
+void httpConnection::dumpHeader()
+{
+    qWarning() << "== httpConnection::dumpHeader ==";
+
+    QMapIterator<QString, QString> i(mHeaders);
+    while (i.hasNext())
+    {
+        i.next();
+        qWarning() << " -" << i.key() << "=>" << i.value();
+    }
+}
+
+/**
+ * @brief  Get the URI of the request
+ * @return String
+ *
+ */
+const QString & httpConnection::getUri(void)
+{
+    return mUri;
+}
+
+/**
+ * @brief Slot called when data are received on socket
+ *
+ */
+void httpConnection::receive()
+{
+    try {
+        while (mSocket->bytesAvailable())
+        {
+            switch (mState)
+            {
+            case REQ_LINE:   recvReqFirst();  break;
+            case REQ_HEADER: recvReqHeader(); break;
+            default:
+                return;
+            }
+        }
+    } catch (...) {
+        qWarning() << "httpConnection::receive() EXCEPTION";
+        mState = REQ_ERROR;
+    }
+}
+
+/**
+ * @brief Receive and process the first line of a request
+ *
+ */
+void httpConnection::recvReqFirst()
+{
+    int rxLen = mSocket->bytesAvailable();
+    QByteArray line = mSocket->readLine(rxLen + 1).trimmed();
+    if (line.size() == 0)
+        return;
+    line = line.trimmed();
+
+    QList<QByteArray> fields = line.split(' ');
+    if (fields.size() != 3)
+        throw -2;
+    // Decode requested method
+    QString method = fields.at(0);
+    if (method == "GET")
+        mMethod = GET;
+    else if (method == "POST")
+        mMethod = POST;
+    else if (method == "PUT")
+        mMethod = PUT;
+    else if (method == "HEAD")
+        mMethod = HEAD;
+    else if (method == "OPTION")
+        mMethod = OPTIONS;
+    else
+        throw -3;
+
+    QString uri = fields.at(1);
+    int sep = uri.indexOf('?');
+    if (sep >= 0)
+    {
+        // Get the query string ...
+        QString queryString = uri.mid(sep + 1);
+        // ... and remove it after URI
+        uri.truncate(sep);
+
+        // Decode query string and extract arguments
+        QStringList args = queryString.split('&');
+        for (int i = 0; i < args.size(); ++i)
+        {
+            QString arg = args.at(i);
+            // Search the name/value separator ('=')
+            int argSep = arg.indexOf('=');
+            if (argSep <= 0)
+                continue;
+            // Extract argument name and value
+            QString argName  = arg.left(argSep);
+            QString argValue = arg.mid(argSep + 1);
+            // Save argument
+            mQueryArgs.insert(argName, argValue);
+        }
+    }
+    mUri = uri;
+
+    mState = REQ_HEADER;
+}
+
+/**
+ * @brief Receive and process header lines of a request
+ *
+ */
+void httpConnection::recvReqHeader()
+{
+    int rxLen = mSocket->bytesAvailable();
+    while(rxLen > 0)
+    {
+        QByteArray ln = mSocket->readLine(rxLen + 1);
+        int lineLen = ln.size();
+        if (lineLen == 0)
+            break;
+        // If line is empty, this is the header/body separator
+        if (ln == "\r\n")
+        {
+            mState = REQ_BODY;
+            emit headerReceived();
+            break;
+        }
+        ln = ln.trimmed();
+
+        int sep = ln.indexOf(':');
+        if (sep > 0)
+        {
+            QString headerKey = ln.left(sep);
+            QString headerValue = ln.mid(sep + 1).trimmed();
+            if (mHeaders.contains(headerKey))
+                mHeaders.remove(headerKey);
+            mHeaders.insert(headerKey, headerValue);
+        }
+        else
+            qWarning() << "RX: unknown strange line " << ln;
+        rxLen -= lineLen;
+    }
+}
