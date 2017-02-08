@@ -18,6 +18,8 @@
 #include <QTcpSocket>
 #include "httpserver.h"
 #include "httpconnection.h"
+#include "httpcontent.h"
+#include "httpresponse.h"
 
 /**
  * @brief Default constructor
@@ -46,7 +48,8 @@ void httpServer::req(void)
     }
 
     // Create a new httpConnection to handle the newly connected client
-    httpConnection *client = new httpConnection(clientSocket);
+    httpConnection *client = new httpConnection(this);
+    client->setSocket(clientSocket);
     connect(client, SIGNAL(headerReceived()),
             this,   SLOT  (reqHeadComplete()));
 }
@@ -69,5 +72,14 @@ void httpServer::reqHeadComplete()
     }
 
     qWarning() << "Requested URI " << client->getUri();
-    client->dummyResponse();
+
+    httpResponse *response = client->getResponse();
+    response->setStatusCode(200);
+    response->setContentType("text/html");
+
+    httpContent *content = new httpContent();
+    content->append("<html><body><h1>Hello World ! cataclop</h1></body></html>");
+    response->setContent(content);
+
+    client->sendResponse();
 }

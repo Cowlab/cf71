@@ -24,12 +24,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
     app.cpp \
     httpserver.cpp \
-    httpconnection.cpp
+    httpconnection.cpp \
+    httpresponse.cpp \
+    httpcontent.cpp
 
 HEADERS += \
     app.h \
     httpserver.h \
-    httpconnection.h
+    httpconnection.h \
+    httpresponse.h \
+    httpcontent.h
 
 FORMS     +=
 RESOURCES +=

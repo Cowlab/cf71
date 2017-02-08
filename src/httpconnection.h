@@ -19,6 +19,8 @@
 #include <QMap>
 #include <QTcpSocket>
 
+class httpResponse;
+
 /**
  * @class httpConnection
  * @brief Handle one HTTP connection between server and client
@@ -31,10 +33,13 @@ public:
     enum recvState {REQ_NONE, REQ_LINE, REQ_HEADER, REQ_BODY, REQ_ERROR};
     enum METHOD   {UNKNOWN, GET, POST, PUT, HEAD, OPTIONS};
 public:
-    explicit httpConnection(QTcpSocket *socket);
+    explicit httpConnection(QObject *parent = 0);
+    ~httpConnection();
     void dumpHeader();
-    void dummyResponse(void);
+    httpResponse   *getResponse(void);
     const QString & getUri(void);
+    void  sendResponse(void);
+    void  setSocket(QTcpSocket *socket);
 signals:
     void headerReceived();
 private slots:
@@ -47,6 +52,7 @@ private:
     METHOD      mMethod;
     QTcpSocket *mSocket;
     QString     mUri;
+    httpResponse *mResponse;
     QMap<QString,QString> mHeaders;
     QMap<QString,QString> mQueryArgs;
 };

@@ -14,6 +14,7 @@
  * This program is distributed WITHOUT ANY WARRANTY see README file.
  */
 #include "httpconnection.h"
+#include "httpresponse.h"
 #include <QDebug>
 
 /**
@@ -21,32 +22,25 @@
  * @param socket Pointer to a connected QTcpSocket
  *
  */
-httpConnection::httpConnection(QTcpSocket *socket)
+httpConnection::httpConnection(QObject *parent) : QObject(parent)
 {
-    mSocket = socket;
+    mSocket = 0;
     mState  = REQ_LINE;
     mMethod = UNKNOWN;
-    connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive()));
+    mResponse = 0;
 }
 
 /**
- * @brief Build a dummy response using a static "Hello World" content.
+ * @brief Default destructor
  *
  */
-void httpConnection::dummyResponse(void)
+httpConnection::~httpConnection()
 {
-    QByteArray hd1("HTTP/1.1 200 OK\r\n");
-    mSocket->write(hd1);
-
-    hd1 = "Content-type: text/html\r\n";
-    mSocket->write(hd1);
-    hd1 = "\r\n";
-    mSocket->write(hd1);
-
-    hd1 = "<html><body><h1>Hello World !</h1></body></html>";
-    mSocket->write(hd1);
-
-    mSocket->close();
+    if (mResponse)
+    {
+        delete mResponse;
+        mResponse = 0;
+    }
 }
 
 /**
@@ -66,6 +60,21 @@ void httpConnection::dumpHeader()
 }
 
 /**
+ * @brief Get the response object for this connection
+ *
+ * @return Pointer to the response object for connection
+ */
+httpResponse *httpConnection::getResponse(void)
+{
+    // If no response object available
+    if (mResponse == 0)
+        // Allocate a new response
+        mResponse = new httpResponse();
+
+    return mResponse;
+}
+
+/**
  * @brief  Get the URI of the request
  * @return String
  *
@@ -81,6 +90,9 @@ const QString & httpConnection::getUri(void)
  */
 void httpConnection::receive()
 {
+    if (mSocket == 0)
+        return;
+
     try {
         while (mSocket->bytesAvailable())
         {
@@ -104,6 +116,9 @@ void httpConnection::receive()
  */
 void httpConnection::recvReqFirst()
 {
+    if (mSocket == 0)
+        return;
+
     int rxLen = mSocket->bytesAvailable();
     QByteArray line = mSocket->readLine(rxLen + 1).trimmed();
     if (line.size() == 0)
@@ -164,6 +179,9 @@ void httpConnection::recvReqFirst()
  */
 void httpConnection::recvReqHeader()
 {
+    if (mSocket == 0)
+        return;
+
     int rxLen = mSocket->bytesAvailable();
     while(rxLen > 0)
     {
@@ -193,4 +211,33 @@ void httpConnection::recvReqHeader()
             qWarning() << "RX: unknown strange line " << ln;
         rxLen -= lineLen;
     }
+}
+
+/**
+ * @brief Send the response for the current connection
+ *
+ */
+void httpConnection::sendResponse(void)
+{
+    if (mSocket == 0)
+        return;
+
+    if (mResponse == 0) {
+        qWarning() << "httpConnection::sendResponse() No Response !";
+        return;
+    }
+
+    mResponse->send( mSocket );
+
+    mSocket->close();
+}
+
+/**
+ * @brief Set the client socket for this connection
+ * @param socket Pointer to the QSocket connected with the client
+ */
+void httpConnection::setSocket(QTcpSocket *socket)
+{
+    mSocket = socket;
+    connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive()));
 }
