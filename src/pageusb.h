@@ -1,6 +1,6 @@
 /**
- * @file  page.h
- * @brief This class define a generic Page skeleton
+ * @file  pageusb.h
+ * @brief This class is an HTTP page for USB
  *
  * @author Saint-Genest Gwenael <gwen@hooligan0.net>
  * @copyright Cowlab (c) 2017
@@ -13,21 +13,26 @@
  * License along with this program, see LICENSE file for more details.
  * This program is distributed WITHOUT ANY WARRANTY see README file.
  */
-#ifndef PAGE_H
-#define PAGE_H
+#ifndef PAGEUSB_H
+#define PAGEUSB_H
 
-#include "httpconnection.h"
+#include "page.h"
 
-class Page
+class UsbControl;
+
+/**
+ * @class PageUsb
+ * @brief This class is an HTTP page for USB
+ *
+ */
+class PageUsb: public Page
 {
 public:
-    Page();
-    virtual ~Page();
-    httpConnection *connection(void);
-    void setConnection(httpConnection *conn);
-    virtual void process(void);
+    PageUsb();
+    ~PageUsb();
+    void process(void);
 private:
-    httpConnection *mConnection;
+    UsbControl *mUsb;
 };
 
-#endif // PAGE_H
+#endif // PAGEUSB_H

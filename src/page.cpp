@@ -20,6 +20,11 @@ Page::Page()
     mConnection = 0;
 }
 
+Page::~Page()
+{
+    // Nothing to free
+}
+
 httpConnection *Page::connection(void)
 {
     return mConnection;

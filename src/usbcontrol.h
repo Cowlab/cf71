@@ -1,6 +1,6 @@
 /**
- * @file  page.h
- * @brief This class define a generic Page skeleton
+ * @file  usbcontrol.h
+ * @brief Main object to manage USB
  *
  * @author Saint-Genest Gwenael <gwen@hooligan0.net>
  * @copyright Cowlab (c) 2017
@@ -13,21 +13,29 @@
  * License along with this program, see LICENSE file for more details.
  * This program is distributed WITHOUT ANY WARRANTY see README file.
  */
-#ifndef PAGE_H
-#define PAGE_H
+#ifndef USBCONTROL_H
+#define USBCONTROL_H
 
-#include "httpconnection.h"
+#include <QObject>
+#include <QList>
+#include <libusb-1.0/libusb.h>
+#include "usbdevice.h"
 
-class Page
+/**
+ * @class UsbControl
+ * @brief Main object to manage USB
+ *
+ */
+class UsbControl : public QObject
 {
+    Q_OBJECT
 public:
-    Page();
-    virtual ~Page();
-    httpConnection *connection(void);
-    void setConnection(httpConnection *conn);
-    virtual void process(void);
+    UsbControl();
+    int refreshList(void);
+    UsbDevice *getDevice(int index);
 private:
-    httpConnection *mConnection;
+    libusb_context *mLibCtx;
+    QList<UsbDevice *> mDeviceList;
 };
 
-#endif // PAGE_H
+#endif // USBCONTROL_H

@@ -1,6 +1,6 @@
 /**
- * @file  page.h
- * @brief This class define a generic Page skeleton
+ * @file  usbdevice.h
+ * @brief Manage one specific USB device
  *
  * @author Saint-Genest Gwenael <gwen@hooligan0.net>
  * @copyright Cowlab (c) 2017
@@ -13,21 +13,29 @@
  * License along with this program, see LICENSE file for more details.
  * This program is distributed WITHOUT ANY WARRANTY see README file.
  */
-#ifndef PAGE_H
-#define PAGE_H
+#ifndef USBDEVICE_H
+#define USBDEVICE_H
 
-#include "httpconnection.h"
+#include <QObject>
+#include <libusb-1.0/libusb.h>
 
-class Page
+/**
+ * @class UsbDevice
+ * @brief Manage one specific USB device
+ */
+class UsbDevice : public QObject
 {
+    Q_OBJECT
 public:
-    Page();
-    virtual ~Page();
-    httpConnection *connection(void);
-    void setConnection(httpConnection *conn);
-    virtual void process(void);
+    explicit UsbDevice(QObject *parent, libusb_device *dev = 0);
+    ~UsbDevice();
+    ulong   getPid(void);
+    ulong   getVid(void);
+protected:
+    void    setDevice(libusb_device *dev);
 private:
-    httpConnection *mConnection;
+    ulong   mVID;
+    ulong   mPID;
 };
 
-#endif // PAGE_H
+#endif // USBDEVICE_H

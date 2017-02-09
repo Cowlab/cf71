@@ -22,6 +22,7 @@
 #include "httpresponse.h"
 #include "page.h"
 #include "pagestatic.h"
+#include "pageusb.h"
 
 /**
  * @brief Default constructor
@@ -80,6 +81,11 @@ void httpServer::reqHeadComplete()
     {
         pg = new PageStatic();
         pg->setConnection(client);
+    }
+    else if (client->getUri().left(4).toLower() == "/usb")
+    {
+        pg = new PageUsb();
+        pg->setConnection(client);
     } else
         pg = new Page();
 
@@ -87,4 +93,6 @@ void httpServer::reqHeadComplete()
         pg->process();
 
     client->sendResponse();
+
+    delete pg;
 }

@@ -23,21 +23,29 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     app.cpp \
-    httpserver.cpp \
     httpconnection.cpp \
-    httpresponse.cpp \
     httpcontent.cpp    \
+    httpresponse.cpp   \
+    httpserver.cpp     \
     page.cpp           \
-    pagestatic.cpp
+    pagestatic.cpp     \
+    pageusb.cpp        \
+    usbcontrol.cpp \
+    usbdevice.cpp
 
 HEADERS += \
     app.h \
-    httpserver.h \
     httpconnection.h \
-    httpresponse.h \
     httpcontent.h    \
+    httpresponse.h   \
+    httpserver.h     \
     page.h           \
-    pagestatic.h
+    pagestatic.h     \
+    pageusb.h        \
+    usbcontrol.h \
+    usbdevice.h
+
+LIBS    += -lusb-1.0
 
 FORMS     +=
 RESOURCES +=
