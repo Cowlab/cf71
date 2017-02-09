@@ -222,12 +222,14 @@ void httpConnection::sendResponse(void)
     if (mSocket == 0)
         return;
 
-    if (mResponse == 0) {
+    httpResponse *rsp = getResponse();
+
+    if (rsp == 0) {
         qWarning() << "httpConnection::sendResponse() No Response !";
         return;
     }
 
-    mResponse->send( mSocket );
+    rsp->send( mSocket );
 
     mSocket->close();
 }

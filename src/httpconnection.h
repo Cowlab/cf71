@@ -18,8 +18,7 @@
 
 #include <QMap>
 #include <QTcpSocket>
-
-class httpResponse;
+#include "httpresponse.h"
 
 /**
  * @class httpConnection

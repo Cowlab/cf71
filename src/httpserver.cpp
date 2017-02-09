@@ -20,6 +20,8 @@
 #include "httpconnection.h"
 #include "httpcontent.h"
 #include "httpresponse.h"
+#include "page.h"
+#include "pagestatic.h"
 
 /**
  * @brief Default constructor
@@ -73,13 +75,16 @@ void httpServer::reqHeadComplete()
 
     qWarning() << "Requested URI " << client->getUri();
 
-    httpResponse *response = client->getResponse();
-    response->setStatusCode(200);
-    response->setContentType("text/html");
+    Page *pg = 0;
+    if (client->getUri() == "/")
+    {
+        pg = new PageStatic();
+        pg->setConnection(client);
+    } else
+        pg = new Page();
 
-    httpContent *content = new httpContent();
-    content->append("<html><body><h1>Hello World ! cataclop</h1></body></html>");
-    response->setContent(content);
+    if (pg)
+        pg->process();
 
     client->sendResponse();
 }

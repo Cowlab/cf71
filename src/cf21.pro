@@ -26,14 +26,18 @@ SOURCES += main.cpp\
     httpserver.cpp \
     httpconnection.cpp \
     httpresponse.cpp \
-    httpcontent.cpp
+    httpcontent.cpp    \
+    page.cpp           \
+    pagestatic.cpp
 
 HEADERS += \
     app.h \
     httpserver.h \
     httpconnection.h \
     httpresponse.h \
-    httpcontent.h
+    httpcontent.h    \
+    page.h           \
+    pagestatic.h
 
 FORMS     +=
 RESOURCES +=
