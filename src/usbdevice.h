@@ -29,6 +29,9 @@ class UsbDevice : public QObject
 public:
     explicit UsbDevice(QObject *parent, libusb_device *dev = 0);
     ~UsbDevice();
+    uint    getConnBus(void);
+    uint    getConnDevice(void);
+    uint    getConnPort(void);
     ulong   getPid(void);
     ulong   getVid(void);
 protected:
@@ -36,6 +39,10 @@ protected:
 private:
     ulong   mVID;
     ulong   mPID;
+    // Where connected
+    uint    mBus;
+    uint    mPort;
+    uint    mDev;
 };
 
 #endif // USBDEVICE_H

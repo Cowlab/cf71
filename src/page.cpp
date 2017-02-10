@@ -14,25 +14,54 @@
  * This program is distributed WITHOUT ANY WARRANTY see README file.
  */
 #include "page.h"
+#include "httpcontent.h"
 
+/**
+ * @brief Default constructor
+ *
+ */
 Page::Page()
 {
     mConnection = 0;
 }
 
+/**
+ * @brief Default destructor
+ *
+ */
 Page::~Page()
 {
     // Nothing to free
 }
 
+/**
+ * @brief Get the HTTP connection
+ *
+ * @return httpConnection* Pointer to the connection object
+ */
 httpConnection *Page::connection(void)
 {
     return mConnection;
 }
 
+/**
+ * @brief Process the page : handle request and create resulting content
+ *
+ * This is a virtual method, the proces must be overloaded by each specific
+ * page. This method is used as fallback if no specific page available. The
+ * result is to return a "404" page.
+ */
 void Page::process(void)
 {
-    //
+    // Create an html content
+    httpContent *content = new httpContent();
+    content->append("<html><body><h1>404: Not found</h1></body></html>");
+
+    // Create a response for the request
+    httpResponse *response = connection()->getResponse();
+    response->setStatusCode(404);
+    response->setContentType("text/html");
+    response->setContent(content);
 }
 
 /**

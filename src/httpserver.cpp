@@ -74,23 +74,23 @@ void httpServer::reqHeadComplete()
         return;
     }
 
+#ifdef QT_DEBUG
     qWarning() << "Requested URI " << client->getUri();
+#endif
 
     Page *pg = 0;
     if (client->getUri() == "/")
-    {
         pg = new PageStatic();
-        pg->setConnection(client);
-    }
     else if (client->getUri().left(4).toLower() == "/usb")
-    {
         pg = new PageUsb();
-        pg->setConnection(client);
-    } else
+    else
         pg = new Page();
 
     if (pg)
+    {
+        pg->setConnection(client);
         pg->process();
+    }
 
     client->sendResponse();
 

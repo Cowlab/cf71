@@ -38,16 +38,61 @@ UsbDevice::~UsbDevice()
     //
 }
 
+/**
+ * @brief Get the USB bus number where device is connected
+ *
+ * @return integer Bus ID
+ */
+uint UsbDevice::getConnBus(void)
+{
+    return mBus;
+}
+
+/**
+ * @brief Get the USB device number that identify the current device on the bus
+ *
+ * @return integer Device ID
+ */
+uint UsbDevice::getConnDevice(void)
+{
+    return mDev;
+}
+
+/**
+ * @brief Get the USB port number where device is connected
+ *
+ * @return integer Port ID
+ */
+uint UsbDevice::getConnPort(void)
+{
+    return mPort;
+}
+
+/**
+ * @brief Get the product-ID of the device
+ *
+ * @return integer Product ID
+ */
 ulong UsbDevice::getPid(void)
 {
     return mPID;
 }
 
+/**
+ * @brief Get the vendor-ID of the device
+ *
+ * @return integer Vendor ID
+ */
 ulong UsbDevice::getVid(void)
 {
     return mVID;
 }
 
+/**
+ * @brief Load device informations from a libusb device structure
+ *
+ * @param dev Pointer to the device struct from libusb
+ */
 void UsbDevice::setDevice(libusb_device *dev)
 {
     libusb_device_descriptor desc;
@@ -57,4 +102,8 @@ void UsbDevice::setDevice(libusb_device *dev)
 
     mVID = desc.idVendor;
     mPID = desc.idProduct;
+
+    mBus  = libusb_get_bus_number(dev);
+    mPort = libusb_get_port_number(dev);
+    mDev  = libusb_get_device_address(dev);
 }

@@ -48,7 +48,9 @@ void PageUsb::process(void)
         UsbDevice *dev = mUsb->getDevice(i);
         QString VID = QString("%1").arg(dev->getVid(), 4, 16, QChar('0'));
         QString PID = QString("%1").arg(dev->getPid(), 4, 16, QChar('0'));
-        htmlContent += "<li>" + VID + ":" + PID + "</li>";
+
+        QString pos = QString("%1.%2.%3").arg(dev->getConnBus()).arg(dev->getConnPort()).arg(dev->getConnDevice());
+        htmlContent += "<li>" + VID + ":" + PID + "@" + pos + "</li>";
     }
     htmlContent += "</body></html>";
     content->append(htmlContent);
