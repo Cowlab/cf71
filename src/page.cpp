@@ -45,13 +45,10 @@ httpConnection *Page::connection(void)
 }
 
 /**
- * @brief Process the page : handle request and create resulting content
+ * @brief Create and return a "Not Found" page (error 404)
  *
- * This is a virtual method, the proces must be overloaded by each specific
- * page. This method is used as fallback if no specific page available. The
- * result is to return a "404" page.
  */
-void Page::process(void)
+void Page::error404(void)
 {
     // Create an html content
     httpContent *content = new httpContent();
@@ -62,6 +59,18 @@ void Page::process(void)
     response->setStatusCode(404);
     response->setContentType("text/html");
     response->setContent(content);
+}
+
+/**
+ * @brief Process the page : handle request and create resulting content
+ *
+ * This is a virtual method, the proces must be overloaded by each specific
+ * page. This method is used as fallback if no specific page available. The
+ * result is to return a "404" page.
+ */
+void Page::process(void)
+{
+    error404();
 }
 
 /**

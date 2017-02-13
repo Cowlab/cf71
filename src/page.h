@@ -26,6 +26,8 @@ public:
     httpConnection *connection(void);
     void setConnection(httpConnection *conn);
     virtual void process(void);
+protected:
+    void error404(void);
 private:
     httpConnection *mConnection;
 };

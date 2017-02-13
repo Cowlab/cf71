@@ -39,7 +39,8 @@ void PageUsb::process(void)
     response->setContentType("text/html");
 
     httpContent *content = new httpContent();
-    QString htmlContent = "<html><body><h1>List USB devices</h1>";
+    QString htmlContent = "<h2>List USB devices</h2>";
+    htmlContent += "<ul>";
 
     int count = mUsb->refreshList();
 
@@ -52,7 +53,7 @@ void PageUsb::process(void)
         QString pos = QString("%1.%2.%3").arg(dev->getConnBus()).arg(dev->getConnPort()).arg(dev->getConnDevice());
         htmlContent += "<li>" + VID + ":" + PID + "@" + pos + "</li>";
     }
-    htmlContent += "</body></html>";
+    htmlContent += "</ul>";
     content->append(htmlContent);
     response->setContent(content);
 }

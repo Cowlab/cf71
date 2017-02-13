@@ -18,11 +18,17 @@
 
 #include "page.h"
 
+/**
+ * @class PageStatic
+ * @brief This class return a content from a static file
+ */
 class PageStatic: public Page
 {
 public:
-    PageStatic();
+    explicit PageStatic(const QString &uri);
     void process(void);
+private:
+    QString mUri;
 };
 
 #endif // PAGESTATIC_H

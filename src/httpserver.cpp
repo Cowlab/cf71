@@ -80,9 +80,13 @@ void httpServer::reqHeadComplete()
 
     Page *pg = 0;
     if (client->getUri() == "/")
-        pg = new PageStatic();
+        pg = new PageStatic("index.html");
     else if (client->getUri().left(4).toLower() == "/usb")
         pg = new PageUsb();
+    else if (client->getUri().left(5).toLower() == "/css/")
+        pg = new PageStatic(client->getUri().mid(5));
+    else if (client->getUri().left(4).toLower() == "/js/")
+        pg = new PageStatic(client->getUri().mid(4));
     else
         pg = new Page();
 

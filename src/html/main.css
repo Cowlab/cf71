@@ -1,0 +1,37 @@
+body {
+	font-family: sans-serif;
+	background: none repeat scroll 0% 0% rgb(37, 59, 70);
+}
+
+h1, h2 {
+	margin: 0;
+	padding: 10px;
+}
+
+a, a:visited {
+	color: inherit;
+}
+
+.header {
+	background-color: rgb(109, 139, 147);
+	color: rgb(37, 59, 70);
+	margin-top: 25px;
+}
+
+.content {
+	background-color: rgb(59, 75, 84);
+	color: #cccccc;
+	min-height: 250px;
+}
+
+.header,  .content {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 700px;
+	position: relative;
+	width: 100%;
+}
+
+.content p:first-child {
+	margin-top: 0;
+}

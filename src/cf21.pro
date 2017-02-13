@@ -48,4 +48,4 @@ HEADERS += \
 LIBS    += -lusb-1.0
 
 FORMS     +=
-RESOURCES +=
+RESOURCES += html_content.qrc

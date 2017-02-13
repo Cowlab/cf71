@@ -75,6 +75,8 @@ void httpResponse::send(QTcpSocket *sock)
 
 void httpResponse::setContent(httpContent *content)
 {
+    if (mContent)
+        delete mContent;
     mContent = content;
 }
 
