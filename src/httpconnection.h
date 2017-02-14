@@ -35,6 +35,7 @@ public:
     explicit httpConnection(QObject *parent = 0);
     ~httpConnection();
     void dumpHeader();
+    const QString   getHeader(const QString &key);
     httpResponse   *getResponse(void);
     const QString & getUri(void);
     void  sendResponse(void);

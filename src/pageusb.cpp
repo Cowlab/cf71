@@ -16,29 +16,52 @@
 #include "pageusb.h"
 #include "httpcontent.h"
 #include "httpresponse.h"
+#include "jsonarray.h"
+#include "jsonobject.h"
 #include "usbcontrol.h"
 
+/**
+ * @brief Default constructor
+ *
+ */
 PageUsb::PageUsb()
 {
     mUsb = 0;
 }
 
+/**
+ * @brief Default destructor
+ *
+ */
 PageUsb::~PageUsb()
 {
     if (mUsb)
         delete mUsb;
 }
 
+/**
+ * @brief Process a request and create a resulting content
+ *
+ */
 void PageUsb::process(void)
 {
     if (mUsb == 0)
         mUsb = new UsbControl;
 
-    httpResponse *response = connection()->getResponse();
-    response->setStatusCode(200);
-    response->setContentType("text/html");
+    // If a JSON content is requested
+    if ( isJsonRequest() )
+        resultJson();
+    // Else, make an HTML content as result
+    else
+        resultHtml();
+}
 
-    httpContent *content = new httpContent();
+/**
+ * @brief Create a HTML content as result
+ *
+ */
+void PageUsb::resultHtml(void)
+{
     QString htmlContent = "<h2>List USB devices</h2>";
     htmlContent += "<ul>";
 
@@ -54,6 +77,48 @@ void PageUsb::process(void)
         htmlContent += "<li>" + VID + ":" + PID + "@" + pos + "</li>";
     }
     htmlContent += "</ul>";
+
+    httpContent *content = new httpContent();
     content->append(htmlContent);
+
+    httpResponse *response = connection()->getResponse();
+    response->setStatusCode(200);
+    response->setContentType("text/html");
     response->setContent(content);
+}
+
+/**
+ * @brief Create a JSON content as result
+ *
+ */
+void PageUsb::resultJson(void)
+{
+    jsonObject *jContent = new jsonObject();
+    jContent->add("result", "success");
+
+    jsonArray *jList = new jsonArray();
+    jContent->add("list", jList);
+
+    for (int i = 0; i < mUsb->refreshList(); ++i)
+    {
+        UsbDevice *dev = mUsb->getDevice(i);
+
+        QString VID = QString("%1").arg(dev->getVid(), 4, 16, QChar('0'));
+        QString PID = QString("%1").arg(dev->getPid(), 4, 16, QChar('0'));
+        // Get conenction infos
+        QString busID  = QString("%1").arg(dev->getConnBus());
+        QString portID = QString("%1").arg(dev->getConnPort());
+        QString devID  = QString("%1").arg(dev->getConnDevice());
+
+        jsonObject *item = new jsonObject();
+        item->add("vid", VID);
+        item->add("pid", PID);
+        item->add("conn_bus",    busID);
+        item->add("conn_port",   portID);
+        item->add("conn_device", devID);
+
+        jList->add(item);
+    }
+
+    setContent(jContent);
 }

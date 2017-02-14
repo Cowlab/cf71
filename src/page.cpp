@@ -15,6 +15,8 @@
  */
 #include "page.h"
 #include "httpcontent.h"
+#include "jsonobject.h"
+#include "jsonarray.h"
 
 /**
  * @brief Default constructor
@@ -62,6 +64,21 @@ void Page::error404(void)
 }
 
 /**
+ * @brief Test if the request is an XMLHttpRequest
+ *
+ * @return boolean True is the request if XMLHttpRequest
+ */
+bool Page::isJsonRequest(void)
+{
+    QString xHeader = connection()->getHeader("X-Requested-With");
+
+    if (xHeader.toLower() == "xmlhttprequest")
+        return true;
+
+    return false;
+}
+
+/**
  * @brief Process the page : handle request and create resulting content
  *
  * This is a virtual method, the proces must be overloaded by each specific
@@ -80,4 +97,22 @@ void Page::process(void)
 void Page::setConnection(httpConnection *conn)
 {
     mConnection = conn;
+}
+
+/**
+ * @brief Set a JSON element as result content
+ *
+ * @param json Pointer to the JSON element to use as result
+ */
+void Page::setContent(jsonElement *json)
+{
+    // Create an http content
+    httpContent *content = new httpContent();
+    content->setJson(json);
+
+    // Create a response for the request
+    httpResponse *response = connection()->getResponse();
+    response->setStatusCode(200);
+    response->setContentType("application/json");
+    response->setContent(content);
 }

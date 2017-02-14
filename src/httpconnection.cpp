@@ -60,6 +60,20 @@ void httpConnection::dumpHeader()
 }
 
 /**
+ * @brief httpConnection::getHeader
+ *
+ * @param key Name of the header entry to find
+ * @return QString Value for the header entry
+ */
+const QString httpConnection::getHeader(const QString &key)
+{
+    if ( ! mHeaders.contains(key) )
+        return QString();
+
+    return mHeaders.value(key);
+}
+
+/**
  * @brief Get the response object for this connection
  *
  * @return Pointer to the response object for connection

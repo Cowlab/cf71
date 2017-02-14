@@ -17,6 +17,7 @@
 #define PAGE_H
 
 #include "httpconnection.h"
+#include "jsonelement.h"
 
 class Page
 {
@@ -24,8 +25,10 @@ public:
     Page();
     virtual ~Page();
     httpConnection *connection(void);
+    bool isJsonRequest(void);
     void setConnection(httpConnection *conn);
     virtual void process(void);
+    void setContent(jsonElement *json);
 protected:
     void error404(void);
 private:

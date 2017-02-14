@@ -22,7 +22,20 @@
  */
 httpContent::httpContent()
 {
+    mJson = 0;
+}
 
+/**
+ * @brief Default destructor
+ *
+ */
+httpContent::~httpContent()
+{
+    if (mJson)
+    {
+        delete mJson;
+        mJson = 0;
+    }
 }
 
 /**
@@ -41,5 +54,30 @@ void httpContent::append(const QString &str)
  */
 const QByteArray &httpContent::getData(void)
 {
+    if (mJson)
+    {
+        // Clear buffer
+        mData.clear();
+        // Set local buffer as render output for JSON element
+        mJson->setRenderBuffer( &mData );
+        // Do rendering !
+        mJson->render();
+    }
+
     return mData;
+}
+
+/**
+ * @brief Set a JSON element as root content
+ *
+ * @param root Pointer to a JSON element
+ */
+void httpContent::setJson(jsonElement *root)
+{
+    // If a JSON element has previously been set, remove it !
+    if (mJson)
+        delete mJson;
+
+    // Save the specified element as root
+    mJson = root;
 }

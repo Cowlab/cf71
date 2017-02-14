@@ -35,3 +35,8 @@ a, a:visited {
 .content p:first-child {
 	margin-top: 0;
 }
+
+.content th, .content td {
+	color: #cccccc;
+	text-align: center;
+}

@@ -17,6 +17,7 @@
 #define HTTPCONTENT_H
 
 #include <QByteArray>
+#include "jsonelement.h"
 
 /**
  * @class httpContent
@@ -27,11 +28,14 @@ class httpContent
 {
 public:
     httpContent();
-    void append(const QString &str);
+    ~httpContent();
+    void  append(const QString &str);
     const QByteArray &getData(void);
+    void  setJson(jsonElement *root);
 
 private:
-    QByteArray mData;
+    QByteArray   mData;
+    jsonElement *mJson;
 };
 
 #endif // HTTPCONTENT_H

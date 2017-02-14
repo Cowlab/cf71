@@ -31,6 +31,9 @@ public:
     PageUsb();
     ~PageUsb();
     void process(void);
+protected:
+    void resultHtml(void);
+    void resultJson(void);
 private:
     UsbControl *mUsb;
 };
