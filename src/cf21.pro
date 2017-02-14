@@ -30,8 +30,12 @@ SOURCES += main.cpp\
     page.cpp           \
     pagestatic.cpp     \
     pageusb.cpp        \
-    usbcontrol.cpp \
-    usbdevice.cpp
+    usbcontrol.cpp     \
+    usbdevice.cpp      \
+    jsonelement.cpp    \
+    jsonobject.cpp     \
+    jsonstring.cpp     \
+    jsonarray.cpp
 
 HEADERS += \
     app.h \
@@ -42,8 +46,12 @@ HEADERS += \
     page.h           \
     pagestatic.h     \
     pageusb.h        \
-    usbcontrol.h \
-    usbdevice.h
+    usbcontrol.h     \
+    usbdevice.h      \
+    jsonelement.h    \
+    jsonobject.h     \
+    jsonstring.h     \
+    jsonarray.h
 
 LIBS    += -lusb-1.0
 
