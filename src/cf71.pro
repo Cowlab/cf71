@@ -1,12 +1,12 @@
 ##
- # @file  cf21.pro
+ # @file  cf71.pro
  # @brief Project file for QT
  #
  # @author Saint-Genest Gwenael <gwen@hooligan0.net>
  # @copyright Cowlab (c) 2017
  #
  # @par Warning
- # CF21 is free software: you can redistribute it and/or modify
+ # CF71 is free software: you can redistribute it and/or modify
  # it under the terms of the GNU Lesser General Public License
  # version 3 as published by the Free Software Foundation. You
  # should have received a copy of the GNU Lesser General Public
@@ -18,11 +18,11 @@ QT       += core network svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET   = cf21
+TARGET   = cf71
 TEMPLATE = app
 
-SOURCES += main.cpp\
-    app.cpp \
+SOURCES += main.cpp    \
+    app.cpp            \
     httpconnection.cpp \
     httpcontent.cpp    \
     httpresponse.cpp   \
@@ -38,7 +38,7 @@ SOURCES += main.cpp\
     jsonarray.cpp
 
 HEADERS += \
-    app.h \
+    app.h            \
     httpconnection.h \
     httpcontent.h    \
     httpresponse.h   \
