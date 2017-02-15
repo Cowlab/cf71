@@ -3,5 +3,6 @@
         <file>html/index.html</file>
         <file>html/main.css</file>
         <file>html/main.js</file>
+        <file>icon.png</file>
     </qresource>
 </RCC>

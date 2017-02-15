@@ -2,11 +2,11 @@
  * @file  main.cpp
  * @brief Entry point of CF21. Load and start QApplication and App
  *
- * @author Saint-Genest Gwenael <gwen@hooligan0.net>
+ * @author Saint-Genest Gwenael <gwen@cowlab.fr>
  * @copyright Cowlab (c) 2017
  *
  * @par Warning
- * CF21 is free software: you can redistribute it and/or modify
+ * CF71 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License
  * version 3 as published by the Free Software Foundation. You
  * should have received a copy of the GNU Lesser General Public
@@ -23,6 +23,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QApplication::setQuitOnLastWindowClosed(false);
+    QApplication::setOrganizationName("Cowlab");
+    QApplication::setApplicationName ("CF71");
+    QApplication::setOrganizationDomain("cowlab.io");
 
     App probeApp;
     probeApp.start();

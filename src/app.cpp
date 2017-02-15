@@ -2,11 +2,11 @@
  * @file  app.cpp
  * @brief Bridge to manage a probe using websocket
  *
- * @author Saint-Genest Gwenael <gwen@hooligan0.net>
+ * @author Saint-Genest Gwenael <gwen@cowlab.fr>
  * @copyright Cowlab (c) 2017
  *
  * @par Warning
- * CF21 is free software: you can redistribute it and/or modify
+ * CF71 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License
  * version 3 as published by the Free Software Foundation. You
  * should have received a copy of the GNU Lesser General Public
@@ -16,9 +16,11 @@
 #include <QAction>
 #include <QApplication>
 #include <QMenu>
+#include <QSettings>
 #include <QSystemTrayIcon>
 #include "app.h"
 #include "httpserver.h"
+#include "window.h"
 
 /**
  * @brief Default constructor
@@ -28,6 +30,34 @@
 App::App(QObject *parent) : QObject(parent)
 {
     mServer = 0;
+
+    QSettings config;
+    if ( ! config.contains("http_port") )
+        config.setValue("http_port", QVariant((int)6144));
+    if ( ! config.contains("use_systray") )
+        config.setValue("use_systray", QVariant((bool)true));
+}
+
+/**
+ * @brief Initialize system tray icon
+ *
+ */
+void App::initSystray(void)
+{
+    QMenu *trayMenu = new QMenu();
+    // Create and insert "Quit" menu entry
+    QAction *act = new QAction(tr("&Quit"), this);
+    connect(act, SIGNAL(triggered()), qApp, SLOT(quit()));
+    trayMenu->addAction(act);
+
+    // Load icon file
+    QIcon icon = QIcon(":/icon.png");
+
+    // Create and load tray icon
+    QSystemTrayIcon *tray = new QSystemTrayIcon(this);
+    tray->setContextMenu(trayMenu);
+    tray->setIcon(icon);
+    tray->show();
 }
 
 /**
@@ -38,5 +68,9 @@ void App::start(void)
 {
     // Create a new web server
     mServer = new httpServer(this);
+
+    QSettings config;
+    if (config.value("use_systray").toBool() == true)
+        initSystray();
 }
 /* EOF */
