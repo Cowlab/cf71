@@ -20,7 +20,6 @@
 #include <QSystemTrayIcon>
 #include "app.h"
 #include "httpserver.h"
-#include "window.h"
 
 /**
  * @brief Default constructor
@@ -30,6 +29,7 @@
 App::App(QObject *parent) : QObject(parent)
 {
     mServer = 0;
+    mWindow = 0;
 
     QSettings config;
     if ( ! config.contains("http_port") )
@@ -45,6 +45,10 @@ App::App(QObject *parent) : QObject(parent)
 void App::initSystray(void)
 {
     QMenu *trayMenu = new QMenu();
+    // Create and insert "Open" menu entry
+    QAction *actOpen = new QAction(tr("&Open"), this);
+    connect(actOpen, SIGNAL(triggered()), this, SLOT(openDialog()));
+    trayMenu->addAction(actOpen);
     // Create and insert "Quit" menu entry
     QAction *act = new QAction(tr("&Quit"), this);
     connect(act, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -58,6 +62,24 @@ void App::initSystray(void)
     tray->setContextMenu(trayMenu);
     tray->setIcon(icon);
     tray->show();
+}
+
+/**
+ * @brief Open the main window
+ *
+ */
+void App::openDialog(void)
+{
+    // If the main window is already open
+    if (mWindow)
+    {
+        // Set focus to the window
+        mWindow->setFocus();
+        return;
+    }
+    // Create and display the main window
+    mWindow = new window;
+    mWindow->show();
 }
 
 /**

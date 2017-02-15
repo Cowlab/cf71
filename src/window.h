@@ -1,6 +1,6 @@
 /**
- * @file  app.h
- * @brief Bridge to manage a probe using websocket
+ * @file  window.h
+ * @brief Dialog window used to get infos and configure app
  *
  * @author Saint-Genest Gwenael <gwen@cowlab.fr>
  * @copyright Cowlab (c) 2017
@@ -13,32 +13,34 @@
  * License along with this program, see LICENSE file for more details.
  * This program is distributed WITHOUT ANY WARRANTY see README file.
  */
-#ifndef APP_H
-#define APP_H
+#ifndef WINDOW_H
+#define WINDOW_H
 
-#include <QObject>
-#include "window.h"
+#include <QDialog>
+#include <QString>
 
-class httpServer;
+namespace Ui {
+class window;
+}
 
 /**
- * @class App
- * @brief The App class is the central arbitrer of program
+ * @class window
+ * @brief This class manage a dialog window used to get infos and configure app
  *
  */
-class App : public QObject
+class window : public QDialog
 {
     Q_OBJECT
-public:
-    explicit App(QObject *parent = 0);
-    void initSystray(void);
-    void start(void);
-private slots:
-    void openDialog();
 
+public:
+    explicit window(QWidget *parent = 0);
+    ~window();
+private slots:
+    void evtPortChanged(QString value);
+    void evtPortButton();
+    void evtSystrayCheck(int state);
 private:
-    httpServer *mServer;
-    window     *mWindow;
+    Ui::window *ui;
 };
 
-#endif // APP_H
+#endif // WINDOW_H

@@ -35,7 +35,8 @@ SOURCES += main.cpp    \
     jsonelement.cpp    \
     jsonobject.cpp     \
     jsonstring.cpp     \
-    jsonarray.cpp
+    jsonarray.cpp      \
+    window.cpp
 
 HEADERS += \
     app.h            \
@@ -51,9 +52,10 @@ HEADERS += \
     jsonelement.h    \
     jsonobject.h     \
     jsonstring.h     \
-    jsonarray.h
+    jsonarray.h      \
+    window.h
 
 LIBS    += -lusb-1.0
 
-FORMS     +=
+FORMS     += window.ui
 RESOURCES += html_content.qrc
