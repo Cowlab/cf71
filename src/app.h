@@ -20,6 +20,7 @@
 #include "window.h"
 
 class httpServer;
+class QSystemTrayIcon;
 
 /**
  * @class App
@@ -35,10 +36,14 @@ public:
     void start(void);
 private slots:
     void openDialog();
+    void dialogClosed();
+    void systrayUpdate(bool state);
 
 private:
-    httpServer *mServer;
-    window     *mWindow;
+    httpServer      *mServer;
+    QSystemTrayIcon *mSystray;
+    bool             mUseSystray;
+    window          *mWindow;
 };
 
 #endif // APP_H

@@ -28,14 +28,38 @@
  */
 App::App(QObject *parent) : QObject(parent)
 {
-    mServer = 0;
-    mWindow = 0;
+    mServer  = 0;
+    mWindow  = 0;
+    mSystray = 0;
+    mUseSystray = false;
 
     QSettings config;
     if ( ! config.contains("http_port") )
         config.setValue("http_port", QVariant((int)6144));
     if ( ! config.contains("use_systray") )
         config.setValue("use_systray", QVariant((bool)true));
+}
+
+/**
+ * @brief Slot called when the main window is closed
+ *
+ */
+void App::dialogClosed()
+{
+    // Sanity check
+    if (mWindow == 0)
+        return;
+
+    // Delete the window
+    delete mWindow;
+    mWindow = 0;
+
+    // If the app does not use systray ...
+    if ( ! mUseSystray)
+    {
+        // ... the finish the app itself
+        qApp->quit();
+    }
 }
 
 /**
@@ -58,10 +82,10 @@ void App::initSystray(void)
     QIcon icon = QIcon(":/icon.png");
 
     // Create and load tray icon
-    QSystemTrayIcon *tray = new QSystemTrayIcon(this);
-    tray->setContextMenu(trayMenu);
-    tray->setIcon(icon);
-    tray->show();
+    mSystray = new QSystemTrayIcon(this);
+    mSystray->setContextMenu(trayMenu);
+    mSystray->setIcon(icon);
+    mSystray->show();
 }
 
 /**
@@ -79,11 +103,13 @@ void App::openDialog(void)
     }
     // Create and display the main window
     mWindow = new window;
+    connect(mWindow, SIGNAL(closed()),            this, SLOT(dialogClosed()));
+    connect(mWindow, SIGNAL(updateSystray(bool)), this, SLOT(systrayUpdate(bool)));
     mWindow->show();
 }
 
 /**
- * @brief Init and start CF21 app
+ * @brief Init and start CF71 app
  *
  */
 void App::start(void)
@@ -93,6 +119,40 @@ void App::start(void)
 
     QSettings config;
     if (config.value("use_systray").toBool() == true)
+    {
         initSystray();
+        mUseSystray = true;
+    }
+    else
+        openDialog();
 }
+
+/**
+ * @brief Update the systray state (enable or disable)
+ *
+ * @param state New systray value requested
+ */
+void App::systrayUpdate(bool state)
+{
+    // If the new requested state is : enabled
+    if (state == true)
+    {
+        if (mSystray == 0)
+        {
+            initSystray();
+            mUseSystray = true;
+        }
+    }
+    // Else, the new requested state is : disable
+    else
+    {
+        if (mSystray)
+        {
+            delete mSystray;
+            mSystray = 0;
+            mUseSystray = false;
+        }
+    }
+}
+
 /* EOF */

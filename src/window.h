@@ -35,6 +35,11 @@ class window : public QDialog
 public:
     explicit window(QWidget *parent = 0);
     ~window();
+signals:
+    void closed(void);
+    void updateSystray(bool state);
+protected:
+    void closeEvent(QCloseEvent *e);
 private slots:
     void evtPortChanged(QString value);
     void evtPortButton();

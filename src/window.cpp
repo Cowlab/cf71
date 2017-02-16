@@ -13,6 +13,7 @@
  * License along with this program, see LICENSE file for more details.
  * This program is distributed WITHOUT ANY WARRANTY see README file.
  */
+#include <QCloseEvent>
 #include <QSettings>
 #include "window.h"
 #include "ui_window.h"
@@ -50,9 +51,28 @@ window::~window()
     delete ui;
 }
 
+/**
+ * @brief Called when window is closed - Overload the QDialog::closeEvent()
+ *
+ * @param e Pointer to the original event
+ */
+void window::closeEvent(QCloseEvent *e)
+{
+    // Emit a custom signal to inform app
+    emit closed();
+    // Accept the event, after that the window will be closed
+    e->accept();
+}
+
+/**
+ * @brief Slot called when the port update button is clicked
+ *
+ */
 void window::evtPortButton()
 {
+    // Get the new port number value
     int newPort = ui->lineEditPort->text().toInt();
+    // If, and only if this value is valid, update config
     if ((newPort > 0) && (newPort < 65536))
     {
         QSettings config;
@@ -61,6 +81,11 @@ void window::evtPortButton()
     }
 }
 
+/**
+ * @brief Slot called when the port number widget is modified
+ *
+ * @param value String of the current LineEdit value
+ */
 void window::evtPortChanged(QString value)
 {
     QSettings config;
@@ -82,11 +107,22 @@ void window::evtPortChanged(QString value)
         ui->butPortUpdate->setEnabled(false);
 }
 
+/**
+ * @brief Slot called when the systray checkbox is modified
+ *
+ * @param state New checkbox value
+ */
 void window::evtSystrayCheck(int state)
 {
     QSettings config;
     if (state == Qt::Checked)
+    {
         config.setValue("use_systray", QVariant((bool)true));
+        emit updateSystray(true);
+    }
     else
+    {
         config.setValue("use_systray", QVariant((bool)false));
+        emit updateSystray(false);
+    }
 }
