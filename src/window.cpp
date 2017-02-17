@@ -15,6 +15,7 @@
  */
 #include <QCloseEvent>
 #include <QSettings>
+#include "app.h"
 #include "window.h"
 #include "ui_window.h"
 
@@ -22,7 +23,7 @@
  * @brief Default constructor
  *
  */
-window::window(QWidget *parent) :
+window::window(QWidget *parent, App *app) :
     QDialog(parent),
     ui(new Ui::window)
 {
@@ -40,6 +41,11 @@ window::window(QWidget *parent) :
     connect(ui->lineEditPort,  SIGNAL(textChanged(QString)), this, SLOT(evtPortChanged(QString)));
     connect(ui->butPortUpdate, SIGNAL(clicked(bool)),        this, SLOT(evtPortButton()));
     connect(ui->cbSystray,     SIGNAL(stateChanged(int)),    this, SLOT(evtSystrayCheck(int)));
+    connect(ui->butServerStart,SIGNAL(clicked(bool)),        this, SLOT(evtServerButton()));
+
+    mApp = app;
+    if (mApp)
+        updateStatus();
 }
 
 /**
@@ -79,6 +85,23 @@ void window::evtPortButton()
         config.setValue("http_port", QVariant((int)newPort));
         ui->butPortUpdate->setEnabled(false);
     }
+}
+
+/**
+ * @brief Slot called when the server Start/Stop button is clicked
+ *
+ */
+void window::evtServerButton()
+{
+    // Disable button to avoid multiple start/stop clicks
+    ui->butServerStart->setEnabled(false);
+
+    if (ui->butServerStart->property("action").toInt() == 1)
+        mApp->startServer();
+    else
+        mApp->stopServer();
+
+    updateStatus();
 }
 
 /**
@@ -124,5 +147,37 @@ void window::evtSystrayCheck(int state)
     {
         config.setValue("use_systray", QVariant((bool)false));
         emit updateSystray(false);
+    }
+}
+
+/**
+ * @brief Update UI infos according to current application state
+ *
+ */
+void window::updateStatus(void)
+{
+    // Sanity check
+    if (mApp == 0)
+        return;
+
+    if ( mApp->isServerStarted() )
+    {
+        // Update status label
+        ui->statusServer->setText( tr("Started") );
+        ui->statusServer->setStyleSheet("color: green");
+        // Update button
+        ui->butServerStart->setText( tr("Stop") );
+        ui->butServerStart->setProperty("action", QVariant((int)0));
+        ui->butServerStart->setEnabled(true);
+    }
+    else
+    {
+        // Update status label
+        ui->statusServer->setText( tr("Stopped") );
+        ui->statusServer->setStyleSheet("color: red");
+        // Update button
+        ui->butServerStart->setText( tr("Start") );
+        ui->butServerStart->setProperty("action", QVariant((int)1));
+        ui->butServerStart->setEnabled(true);
     }
 }

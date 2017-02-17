@@ -89,6 +89,16 @@ void App::initSystray(void)
 }
 
 /**
+ * @brief Get the current status of HTTP server
+ *
+ * @return boolean Server status (True if started)
+ */
+bool App::isServerStarted(void)
+{
+    return mServer->isStarted();
+}
+
+/**
  * @brief Open the main window
  *
  */
@@ -102,7 +112,7 @@ void App::openDialog(void)
         return;
     }
     // Create and display the main window
-    mWindow = new window;
+    mWindow = new window(0, this);
     connect(mWindow, SIGNAL(closed()),            this, SLOT(dialogClosed()));
     connect(mWindow, SIGNAL(updateSystray(bool)), this, SLOT(systrayUpdate(bool)));
     mWindow->show();
@@ -114,8 +124,7 @@ void App::openDialog(void)
  */
 void App::start(void)
 {
-    // Create a new web server
-    mServer = new httpServer(this);
+    startServer();
 
     QSettings config;
     if (config.value("use_systray").toBool() == true)
@@ -125,6 +134,34 @@ void App::start(void)
     }
     else
         openDialog();
+}
+
+/**
+ * @brief Start the HTTP server
+ *
+ * @return boolean Server status (True if started)
+ */
+bool App::startServer(void)
+{
+    // Create a new web server
+    if (mServer == 0)
+        mServer = new httpServer(this);
+
+    return mServer->start();
+}
+
+/**
+ * @brief Stop the HTTP server
+ *
+ * @return boolean Server status (False if stopped)
+ */
+bool App::stopServer(void)
+{
+    // Sanity check
+    if (mServer == 0)
+        return false;
+
+    return mServer->stop();
 }
 
 /**

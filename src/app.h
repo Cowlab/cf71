@@ -34,6 +34,9 @@ public:
     explicit App(QObject *parent = 0);
     void initSystray(void);
     void start(void);
+    bool isServerStarted(void);
+    bool startServer(void);
+    bool stopServer(void);
 private slots:
     void openDialog();
     void dialogClosed();

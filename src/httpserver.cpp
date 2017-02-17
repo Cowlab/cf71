@@ -31,14 +31,17 @@
  */
 httpServer::httpServer(QObject *parent) : QTcpServer(parent)
 {
-    QSettings config;
-    int port = config.value("http_port").toInt();
+    mStarted = false;
+}
 
-    bool result = listen(QHostAddress::LocalHost, port);
-    if (result != true)
-        throw -1;
-
-    connect(this, SIGNAL(newConnection()), this, SLOT(req()));
+/**
+ * @brief Test if the server is currently started
+ *
+ * @return boolean True if the server is started
+ */
+bool httpServer::isStarted(void)
+{
+    return mStarted;
 }
 
 /**
@@ -103,4 +106,50 @@ void httpServer::reqHeadComplete()
     client->sendResponse();
 
     delete pg;
+}
+
+/**
+ * @brief Start the HTTP server
+ *
+ * @return boolean True if the server is started
+ */
+bool httpServer::start(void)
+{
+    if (mStarted)
+        return true;
+
+    QSettings config;
+    int port = config.value("http_port").toInt();
+
+    bool result = listen(QHostAddress::LocalHost, port);
+    if (result == true)
+    {
+        mStarted = true;
+        connect(this, SIGNAL(newConnection()), this, SLOT(req()));
+        emit statusChanged(true);
+    }
+    else
+        mStarted = false;
+
+    return mStarted;
+}
+
+/**
+ * @brief Stop the HTTP server
+ *
+ * @return boolean Status of server (False if stopped)
+ */
+bool httpServer::stop(void)
+{
+    // If the server is not started ... nothing to do
+    if (mStarted == false)
+        return false;
+
+    // Stop listening
+    close();
+    mStarted = false;
+
+    emit statusChanged(false);
+
+    return mStarted;
 }

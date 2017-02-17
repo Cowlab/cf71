@@ -23,6 +23,8 @@ namespace Ui {
 class window;
 }
 
+class App;
+
 /**
  * @class window
  * @brief This class manage a dialog window used to get infos and configure app
@@ -33,19 +35,22 @@ class window : public QDialog
     Q_OBJECT
 
 public:
-    explicit window(QWidget *parent = 0);
+    explicit window(QWidget *parent = 0, App *app = 0);
     ~window();
 signals:
     void closed(void);
     void updateSystray(bool state);
 protected:
     void closeEvent(QCloseEvent *e);
+    void updateStatus(void);
 private slots:
     void evtPortChanged(QString value);
     void evtPortButton();
+    void evtServerButton();
     void evtSystrayCheck(int state);
 private:
     Ui::window *ui;
+    App        *mApp;
 };
 
 #endif // WINDOW_H
