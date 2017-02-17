@@ -2,11 +2,11 @@
  * @file  page.h
  * @brief This class define a generic Page skeleton
  *
- * @author Saint-Genest Gwenael <gwen@hooligan0.net>
+ * @author Saint-Genest Gwenael <gwen@cowlab.fr>
  * @copyright Cowlab (c) 2017
  *
  * @par Warning
- * CF21 is free software: you can redistribute it and/or modify
+ * CF71 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License
  * version 3 as published by the Free Software Foundation. You
  * should have received a copy of the GNU Lesser General Public
@@ -28,11 +28,16 @@ public:
     bool isJsonRequest(void);
     void setConnection(httpConnection *conn);
     virtual void process(void);
-    void setContent(jsonElement *json);
+    void setContent  (jsonElement *json);
+    bool testSecurity(void);
+    bool useSecurity (void);
 protected:
+    void error403(void);
     void error404(void);
+    void setSecurity(bool en);
 private:
     httpConnection *mConnection;
+    bool            mSecurity;
 };
 
 #endif // PAGE_H

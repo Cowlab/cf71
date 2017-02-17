@@ -44,6 +44,7 @@ protected:
     void closeEvent(QCloseEvent *e);
     void updateStatus(void);
 private slots:
+    void evtPassButton();
     void evtPortChanged(QString value);
     void evtPortButton();
     void evtServerButton();

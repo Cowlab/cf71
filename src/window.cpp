@@ -32,16 +32,21 @@ window::window(QWidget *parent, App *app) :
     QSettings config;
     // Update the server port with current port value
     ui->lineEditPort->setText( config.value("http_port").toString() );
+    // Update the server password widget with current value
+    ui->lineEditPass->setText( config.value("http_pass").toString() );
     // Update the "Enable systray" checkbox according to current config
     if (config.value("use_systray").toBool() == true)
         ui->cbSystray->setChecked(true);
     else
         ui->cbSystray->setChecked(false);
 
+    connect(ui->butPassUpdate, SIGNAL(clicked(bool)),        this, SLOT(evtPassButton()));
     connect(ui->lineEditPort,  SIGNAL(textChanged(QString)), this, SLOT(evtPortChanged(QString)));
     connect(ui->butPortUpdate, SIGNAL(clicked(bool)),        this, SLOT(evtPortButton()));
     connect(ui->cbSystray,     SIGNAL(stateChanged(int)),    this, SLOT(evtSystrayCheck(int)));
     connect(ui->butServerStart,SIGNAL(clicked(bool)),        this, SLOT(evtServerButton()));
+
+    ui->butPassUpdate->setEnabled(true);
 
     mApp = app;
     if (mApp)
@@ -68,6 +73,20 @@ void window::closeEvent(QCloseEvent *e)
     emit closed();
     // Accept the event, after that the window will be closed
     e->accept();
+}
+
+/**
+ * @brief Slot called when the password update button is clicked
+ *
+ */
+void window::evtPassButton()
+{
+    // Get the new password string from line edit
+    QString newPass = ui->lineEditPass->text();
+
+    // Update password into config
+    QSettings config;
+    config.setValue("http_pass", QVariant(newPass));
 }
 
 /**

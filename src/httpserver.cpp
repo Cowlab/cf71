@@ -97,15 +97,26 @@ void httpServer::reqHeadComplete()
     else
         pg = new Page();
 
-    if (pg)
-    {
+    try {
+        // Sanity check
+        if ( ! pg)
+            throw -1;
+
         pg->setConnection(client);
+
+        // Check if security is used
+        if ( ! pg->testSecurity())
+            throw -2;
+        // Process page (!)
         pg->process();
+        delete pg;
+
+    } catch (int ecode) {
+        if (pg)
+            delete pg;
     }
 
     client->sendResponse();
-
-    delete pg;
 }
 
 /**
