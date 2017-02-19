@@ -2,11 +2,11 @@
  * @file  httpresponse.h
  * @brief Class to handle a response to an HTTP request
  *
- * @author Saint-Genest Gwenael <gwen@hooligan0.net>
+ * @author Saint-Genest Gwenael <gwen@cowlab.fr>
  * @copyright Cowlab (c) 2017
  *
  * @par Warning
- * CF21 is free software: you can redistribute it and/or modify
+ * CF71 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License
  * version 3 as published by the Free Software Foundation. You
  * should have received a copy of the GNU Lesser General Public
