@@ -38,6 +38,7 @@ signals:
 private slots:
     void req(void);
     void reqHeadComplete();
+    void rspComplete();
 private:
     bool mStarted;
 };

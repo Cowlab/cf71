@@ -41,6 +41,12 @@ httpConnection::~httpConnection()
         delete mResponse;
         mResponse = 0;
     }
+    // If the httpConnection hold a socket, free it
+    if (mSocket)
+    {
+        mSocket->close();
+        mSocket->deleteLater();
+    }
 }
 
 /**
@@ -258,8 +264,6 @@ void httpConnection::sendResponse(void)
     }
 
     rsp->send( mSocket );
-
-    mSocket->close();
 }
 
 /**
@@ -270,4 +274,15 @@ void httpConnection::setSocket(QTcpSocket *socket)
 {
     mSocket = socket;
     connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive()));
+    connect(mSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(written(qint64)));
+}
+
+/**
+ * @brief Slot called when a write() operation is complete
+ *
+ * @param len Length of the data sent
+ */
+void httpConnection::written(qint64 len)
+{
+    emit sendComplete();
 }

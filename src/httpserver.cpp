@@ -62,6 +62,8 @@ void httpServer::req(void)
     client->setSocket(clientSocket);
     connect(client, SIGNAL(headerReceived()),
             this,   SLOT  (reqHeadComplete()));
+    connect(client, SIGNAL(sendComplete()),
+            this,   SLOT  (rspComplete()));
 }
 
 /**
@@ -117,6 +119,24 @@ void httpServer::reqHeadComplete()
     }
 
     client->sendResponse();
+}
+
+/**
+ * @brief Slot called when a client has finish sending the response
+ *
+ */
+void httpServer::rspComplete()
+{
+    // Search the sender of the received signal
+    QObject *sender = QObject::sender();
+    if (sender == 0)
+        return;
+    httpConnection *client = qobject_cast<httpConnection *>(sender);
+    if (client == 0)
+        return;
+
+    // Ok; now we can delete the connection
+    delete client;
 }
 
 /**

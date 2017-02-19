@@ -43,8 +43,10 @@ public:
     void  setSocket(QTcpSocket *socket);
 signals:
     void headerReceived();
+    void sendComplete();
 private slots:
     void receive();
+    void written(qint64 len);
 protected:
     void recvReqFirst();
     void recvReqHeader();
