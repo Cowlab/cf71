@@ -16,6 +16,7 @@
 #ifndef HTTPRESPONSE_H
 #define HTTPRESPONSE_H
 
+#include <QMap>
 #include <QString>
 
 class QTcpSocket;
@@ -32,6 +33,7 @@ public:
     httpResponse();
     ~httpResponse();
     httpContent *getContent(void);
+    void insertHeader(const QString &name, const QString &value);
     void send(QTcpSocket *sock);
     void setContent(httpContent *content);
     void setContentType(const QString &type);
@@ -40,6 +42,7 @@ private:
     int          mRetCode;
     QString      mContentType;
     httpContent *mContent;
+    QMap<QString,QString> mHeaders;
 };
 
 #endif // HTTPRESPONSE_H

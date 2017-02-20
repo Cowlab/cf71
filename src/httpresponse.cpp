@@ -53,6 +53,20 @@ httpContent *httpResponse::getContent(void)
 }
 
 /**
+ * @brief Insert a key into the header section of response
+ *
+ * @param name  String of the key name
+ * @param value String of the key value
+ */
+void httpResponse::insertHeader(const QString &name, const QString &value)
+{
+    if (mHeaders.contains(name))
+        mHeaders.remove(name);
+    // Insert specified name/value into header list
+    mHeaders.insert(name, value);
+}
+
+/**
  * @brief Send the response to the remote client
  *
  * @param sock Pointer to the socket connected to the client
@@ -62,15 +76,31 @@ void httpResponse::send(QTcpSocket *sock)
     QByteArray rspBuffer;
 
     QString reason;
-    if (mRetCode == 200)      reason = "OK";
+    if (mRetCode == 101)      reason = "Switching Protocols";
+    else if (mRetCode == 200) reason = "OK";
     else if (mRetCode == 403) reason = "Forbidden";
     else if (mRetCode == 404) reason = "Not Found";
     QString statusLine = QString("HTTP/1.1 %1 %2\r\n").arg(mRetCode).arg(reason);
     rspBuffer.append(statusLine);
 
     QString headerLine;
-    headerLine = QString("Content-type: %1\r\n").arg(mContentType);
-    rspBuffer.append(headerLine);
+    if ( ! mContentType.isEmpty())
+    {
+        headerLine = QString("Content-type: %1\r\n").arg(mContentType);
+        rspBuffer.append(headerLine);
+    }
+    // Insert other headers
+    QMapIterator<QString, QString> i(mHeaders);
+    while(i.hasNext())
+    {
+        // Select next response header
+        i.next();
+        // Create header string from key/value
+        headerLine = QString("%1: %2\r\n").arg(i.key()).arg(i.value());
+        // Insert into global response buffer
+        rspBuffer.append(headerLine);
+    }
+
     // Append an empty line to finish the header
     rspBuffer.append("\r\n");
 
