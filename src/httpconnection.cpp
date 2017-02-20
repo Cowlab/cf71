@@ -109,6 +109,16 @@ httpResponse *httpConnection::getResponse(void)
 }
 
 /**
+ * @brief Get the socket used by the connection
+ *
+ * @return QTcpSocket* Pointer to the socket currently used
+ */
+QTcpSocket *httpConnection::getSocket(void)
+{
+    return mSocket;
+}
+
+/**
  * @brief  Get the URI of the request
  * @return String
  *
@@ -128,7 +138,7 @@ void httpConnection::receive()
         return;
 
     try {
-        while (mSocket->bytesAvailable())
+        while (mSocket && mSocket->bytesAvailable())
         {
             switch (mState)
             {
@@ -272,9 +282,21 @@ void httpConnection::sendResponse(void)
  */
 void httpConnection::setSocket(QTcpSocket *socket)
 {
-    mSocket = socket;
-    connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive()));
-    connect(mSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(written(qint64)));
+    // If a socket has previously been set
+    if (mSocket)
+    {
+        // Disconnect signals from previous socket
+        disconnect(mSocket, 0, this, 0);
+        // Reset the socket pointer (DO NOT FREE it ! may be used by other objects)
+        mSocket = 0;
+    }
+    // If a not-null object has been specified
+    if (socket)
+    {
+        mSocket = socket;
+        connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive()));
+        connect(mSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(written(qint64)));
+    }
 }
 
 /**

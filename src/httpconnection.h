@@ -38,6 +38,7 @@ public:
     const QString   getHeader(const QString &key);
     const QString   getQueryArg(const QString &name);
     httpResponse   *getResponse(void);
+    QTcpSocket     *getSocket(void);
     const QString & getUri(void);
     void  sendResponse(void);
     void  setSocket(QTcpSocket *socket);
