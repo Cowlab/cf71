@@ -2,7 +2,7 @@
  # @file  cf71.pro
  # @brief Project file for QT
  #
- # @author Saint-Genest Gwenael <gwen@hooligan0.net>
+ # @author Saint-Genest Gwenael <gwen@cowlab.fr>
  # @copyright Cowlab (c) 2017
  #
  # @par Warning
@@ -36,7 +36,8 @@ SOURCES += main.cpp    \
     jsonobject.cpp     \
     jsonstring.cpp     \
     jsonarray.cpp      \
-    window.cpp
+    window.cpp         \
+    websocket.cpp
 
 HEADERS += \
     app.h            \
@@ -53,7 +54,8 @@ HEADERS += \
     jsonobject.h     \
     jsonstring.h     \
     jsonarray.h      \
-    window.h
+    window.h         \
+    websocket.h
 
 LIBS    += -lusb-1.0
 
